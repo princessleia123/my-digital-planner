@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Digital Planner</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="eyebrow">MY DIGITAL PLANNER · VERSION 1</div>
+        <h1>Don’t keep your schoolwork in your brain.</h1>
+        <p class="hero-copy">Write down what is due, tell me when you can work, and I’ll help you choose what to do next.</p>
+        <div class="safety-note"><strong>Safe planning:</strong> this planner will not tell you to skip sleep, meals, or important responsibilities. Ask a trusted adult if your workload feels unsafe or overwhelming.</div>
+      </header>
+
+      <section class="steps" aria-label="How this planner is different">
+        <div class="step"><span>1</span><div><strong>Log it</strong><small>Put every assignment in one place.</small></div></div>
+        <div class="step"><span>2</span><div><strong>Plan it</strong><small>Use the time you actually have.</small></div></div>
+        <div class="step accent-step"><span>3</span><div><strong>Missed it?</strong><small>AI finds another available time.</small></div></div>
+      </section>
+
+      <section class="grid">
+        <div class="card assignments-card">
+          <div class="card-heading">
+            <div><p class="label">YOUR WORK</p><h2>Assignments</h2></div>
+            <span class="local-pill">Saved on this computer</span>
+          </div>
+          <div id="assignment-list" class="assignment-list" aria-live="polite"></div>
+
+          <details class="add-details">
+            <summary>＋ Add an assignment</summary>
+            <form id="assignment-form" class="assignment-form">
+              <label>Assignment title<input id="title" required placeholder="e.g. Finish history outline"></label>
+              <div class="two-fields">
+                <label>Class<input id="subject" required placeholder="e.g. History"></label>
+                <label>Due date<input id="due-date" type="date" required></label>
+              </div>
+              <label>Minutes needed<input id="minutes" type="number" min="5" max="240" value="30" required></label>
+              <button class="secondary-button" type="submit">Save assignment</button>
+            </form>
+          </details>
+        </div>
+
+        <div class="card plan-card">
+          <div class="card-heading">
+            <div><p class="label">YOUR REAL TIME</p><h2>When can you work?</h2></div>
+            <span class="clock-mark">◷</span>
+          </div>
+          <label class="sr-only" for="availability">Available study times</label>
+          <textarea id="availability" rows="5" placeholder="Today: 4:00–4:45 PM&#10;Tomorrow: 6:00–7:00 PM"></textarea>
+          <p class="helper">Use simple words. Example: “I have 45 minutes after school today and an hour tomorrow.”</p>
+          <label class="label question-label" for="question">ASK THE PLANNER AI</label>
+          <textarea id="question" rows="3">Help me plan these assignments. If I missed something, reschedule it into the next available time.</textarea>
+          <button id="plan-button" class="primary-button" type="button">Plan my next steps <span>→</span></button>
+          <div id="ai-status" class="status" role="status" aria-live="polite"></div>
+          <div id="ai-output" class="ai-output">Your short plan will appear here after you press the button.</div>
+          <p class="privacy-line">Your assignments are saved in this browser for now. The AI request goes through the local server so your API key stays off this page.</p>
+        </div>
+      </section>
+
+      <footer>Built for students who forget what is due. Check important dates with your teacher.</footer>
+    </main>
+    <script src="/storage.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
