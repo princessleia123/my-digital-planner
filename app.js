@@ -6,6 +6,7 @@ const questionInput = document.querySelector("#question");
 const planButton = document.querySelector("#plan-button");
 const aiStatus = document.querySelector("#ai-status");
 const aiOutput = document.querySelector("#ai-output");
+const scheduleList = document.querySelector("#schedule-list");
 
 availabilityInput.value = planner.availability;
 document.querySelector("#due-date").value = new Date().toISOString().slice(0, 10);
@@ -53,6 +54,47 @@ function renderAssignments() {
   }).join("");
 }
 
+function splitStudyTime(value) {
+  const separator = value.indexOf(":");
+  if (separator === -1) return { day: "Study time", time: value };
+  return {
+    day: value.slice(0, separator).trim(),
+    time: value.slice(separator + 1).trim()
+  };
+}
+
+function renderSchedule() {
+  const slots = planner.availability.split("\n").map((line) => line.trim()).filter(Boolean);
+  const tasks = planner.assignments
+    .filter((assignment) => assignment.status !== "done")
+    .sort((a, b) => {
+      if (a.status === "missed" && b.status !== "missed") return -1;
+      if (b.status === "missed" && a.status !== "missed") return 1;
+      return String(a.dueDate).localeCompare(String(b.dueDate));
+    });
+
+  if (!tasks.length) {
+    scheduleList.innerHTML = '<div class="schedule-empty">You are all caught up. Add another assignment when you have one.</div>';
+    return;
+  }
+  if (!slots.length) {
+    scheduleList.innerHTML = '<div class="schedule-empty">Add available times above to see what to do and when.</div>';
+    return;
+  }
+
+  scheduleList.innerHTML = tasks.map((assignment, index) => {
+    const slot = slots[index];
+    const studyTime = slot ? splitStudyTime(slot) : { day: "No time entered", time: "Add a study time above" };
+    const missed = assignment.status === "missed";
+    return `
+      <article class="schedule-item ${missed ? "schedule-missed" : ""}">
+        <div class="schedule-time"><strong>${escapeHtml(studyTime.day)}</strong><span>${escapeHtml(studyTime.time)}</span></div>
+        <div class="schedule-task"><strong>${escapeHtml(assignment.title)}</strong><span>${escapeHtml(assignment.subject)} · due ${escapeHtml(dateLabel(assignment.dueDate))}</span></div>
+        ${missed ? '<span class="reschedule-badge">Reschedule</span>' : ""}
+      </article>`;
+  }).join("");
+}
+
 assignmentList.addEventListener("click", (event) => {
   const button = event.target.closest("button[data-action]");
   if (!button) return;
@@ -63,6 +105,7 @@ assignmentList.addEventListener("click", (event) => {
   else assignment.status = "open";
   save();
   renderAssignments();
+  renderSchedule();
 });
 
 assignmentForm.addEventListener("submit", (event) => {
@@ -83,12 +126,16 @@ assignmentForm.addEventListener("submit", (event) => {
   });
   save();
   renderAssignments();
+  renderSchedule();
   assignmentForm.reset();
   document.querySelector("#due-date").value = new Date().toISOString().slice(0, 10);
   document.querySelector("#minutes").value = 30;
 });
 
-availabilityInput.addEventListener("input", save);
+availabilityInput.addEventListener("input", () => {
+  save();
+  renderSchedule();
+});
 
 planButton.addEventListener("click", async () => {
   save();
@@ -124,3 +171,4 @@ planButton.addEventListener("click", async () => {
 });
 
 renderAssignments();
+renderSchedule();

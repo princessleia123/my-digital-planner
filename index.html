@@ -51,6 +51,11 @@
           <label class="sr-only" for="availability">Available study times</label>
           <textarea id="availability" rows="5" placeholder="Today: 4:00–4:45 PM&#10;Tomorrow: 6:00–7:00 PM"></textarea>
           <p class="helper">Use simple words. Example: “I have 45 minutes after school today and an hour tomorrow.”</p>
+          <div class="schedule-heading">
+            <div><p class="label">COMING UP</p><h3>Suggested schedule</h3></div>
+            <span class="schedule-mark">☷</span>
+          </div>
+          <div id="schedule-list" class="schedule-list" aria-live="polite"></div>
           <label class="label question-label" for="question">ASK THE PLANNER AI</label>
           <textarea id="question" rows="3">Help me plan these assignments. If I missed something, reschedule it into the next available time.</textarea>
           <button id="plan-button" class="primary-button" type="button">Plan my next steps <span>→</span></button>

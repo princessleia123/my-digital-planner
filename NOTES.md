@@ -15,6 +15,7 @@ The models list returned two names containing “luna”:
 - Done: saved the project brief in `BRIEF.md`; Version 1 includes adding assignments, recording available study times, marking a task missed, and asking the AI for a short rescheduled plan.
 - Done: the local AI server reads the key from `.env`, sends `BRIEF.md` as the AI instructions, and keeps the key off the page.
 - Done: tested the main flow with made-up assignments; a missed math task was rescheduled and a history task was planned.
+- Done: added a simple upcoming schedule that shows the next study time, task, and due date.
 - Preview: `http://127.0.0.1:8000`
 
 ## Maybe Later
