@@ -2,11 +2,13 @@
 
 import json
 import mimetypes
+import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
 
 from ask_ai import ask_ai
+from keygen_client import KeygenError
 
 
 ROOT = Path(__file__).resolve().parent
@@ -61,6 +63,10 @@ class PlannerHandler(BaseHTTPRequestHandler):
             request_data = json.loads(self.rfile.read(length).decode("utf-8"))
             answer = ask_ai(request_data)
             self.send_json(200, {"answer": answer})
+        except KeygenError as error:
+            if error.fix:
+                print(error.fix, file=sys.stderr)
+            self.send_json(502, {"error": error.message})
         except Exception:
             self.send_json(502, {
                 "error": "I couldn't reach the AI. Please check the key and internet connection."

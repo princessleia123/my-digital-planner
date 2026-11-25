@@ -156,13 +156,16 @@ planButton.addEventListener("click", async () => {
       })
     });
     const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Planner unavailable");
+    if (!response.ok) {
+      const message = typeof result.error === "string" ? result.error : result.error?.message;
+      throw new Error(message || "Planner unavailable");
+    }
     aiOutput.classList.remove("waiting");
     aiOutput.textContent = result.answer;
     aiStatus.textContent = "Plan ready.";
   } catch (error) {
     aiOutput.classList.remove("waiting");
-    aiOutput.textContent = "I couldn't reach the AI. Please check the key and internet connection, then try again.";
+    aiOutput.textContent = error.message || "I couldn't reach the AI. Please try again.";
     aiStatus.textContent = "The plan was not created.";
   } finally {
     planButton.disabled = false;

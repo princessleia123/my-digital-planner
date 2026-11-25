@@ -6,23 +6,11 @@ import urllib.request
 from datetime import date
 from pathlib import Path
 
+from keygen_client import KeygenError, get_key
+
 
 ROOT = Path(__file__).resolve().parent
 MODEL = "gpt-6-luna"
-
-
-def read_api_key():
-    env_path = ROOT / ".env"
-    if not env_path.exists():
-        raise RuntimeError("missing .env")
-
-    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if line.startswith("OPENAI_API_KEY="):
-            value = line.split("=", 1)[1].strip()
-            if value:
-                return value
-    raise RuntimeError("missing OPENAI_API_KEY")
 
 
 def response_text(response_data):
@@ -61,20 +49,31 @@ def ask_ai(student_request):
         )
     }
 
-    request = urllib.request.Request(
-        "https://api.openai.com/v1/responses",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Authorization": "Bearer " + read_api_key(),
-            "Content-Type": "application/json"
-        },
-        method="POST"
-    )
-
-    try:
+    def call_openai(api_key):
+        request = urllib.request.Request(
+            "https://api.openai.com/v1/responses",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": "Bearer " + api_key,
+                "Content-Type": "application/json"
+            },
+            method="POST"
+        )
         with urllib.request.urlopen(request, timeout=45) as response:
-            data = json.loads(response.read().decode("utf-8"))
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError) as error:
+            return json.loads(response.read().decode("utf-8"))
+
+    api_key = get_key()
+    try:
+        data = call_openai(api_key)
+    except urllib.error.HTTPError as error:
+        if error.code not in (401, 403):
+            raise RuntimeError("OpenAI request failed") from error
+        # OpenAI rejected the temporary key, so ask MindDo for one replacement and retry once.
+        try:
+            data = call_openai(get_key(force_refresh=True))
+        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError) as retry_error:
+            raise RuntimeError("OpenAI request failed after refreshing the AI key") from retry_error
+    except (urllib.error.URLError, TimeoutError, ValueError) as error:
         raise RuntimeError("OpenAI request failed") from error
 
     answer = response_text(data)

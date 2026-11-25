@@ -18,6 +18,7 @@ The models list returned two names containing “luna”:
 - Done: added a simple upcoming schedule that shows the next study time, task, and due date.
 - Preview: `http://127.0.0.1:8000`
 - After each save point, push it to GitHub.
+- The AI connects through `getKey()`.
 
 ## Maybe Later
 
