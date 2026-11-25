@@ -17,6 +17,7 @@ The models list returned two names containing “luna”:
 - Done: tested the main flow with made-up assignments; a missed math task was rescheduled and a history task was planned.
 - Done: added a simple upcoming schedule that shows the next study time, task, and due date.
 - Preview: `http://127.0.0.1:8000`
+- After each save point, push it to GitHub.
 
 ## Maybe Later
 
